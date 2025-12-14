@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fashion Collage - Coastal & Festival Styles</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #fef5e7 0%, #fde9e0 50%, #f9e5d8 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            color: #c9796d;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header p {
+            font-size: 1.3em;
+            color: #7d6b5e;
+            font-style: italic;
+        }
+
+        .collage-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 400px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 0.9em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-info {
+            padding: 30px;
+        }
+
+        .product-category {
+            color: #c9796d;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .product-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+
+        .product-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 1.05em;
+        }
+
+        .product-features {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .product-features li {
+            padding: 8px 0;
+            color: #555;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+        }
+
+        .product-features li:before {
+            content: "✓";
+            color: #c9796d;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .style-notes {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .style-notes h2 {
+            color: #c9796d;
+            font-size: 2.5em;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .style-tips {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+
+        .tip-card {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .tip-card h3 {
+            color: #c9796d;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .tip-card p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 1.05em;
+        }
+
+        .color-palette {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .color-swatch {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 10px;
+            color: white;
+            font-size: 0.85em;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (max-width: 1024px) {
+            .collage-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .style-tips {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .collage-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2.5em;
+            }
+
+            .product-title {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✨ Coastal Dreams & Festival Vibes ✨</h1>
+            <p>A curated collection of romantic, feminine styles</p>
+        </div>
+
+        <div class="collage-grid">
+            <!-- Product 1: Floral Beach Maxi Dress -->
+            <div class="product-card">
+                <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800'); background-size: cover; background-position: center;">
+                    <div class="product-badge">Bestseller</div>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Beach • Sunset Wear</div>
+                    <h3 class="product-title">Romantic Floral Maxi Dress</h3>
+                    <p class="product-description">
+                        Ethereal white maxi dress adorned with delicate pink and yellow floral prints. Features adjustable spaghetti straps and a flowing silhouette perfect for beachside moments and golden hour photography.
+                    </p>
+                    <ul class="product-features">
+                        <li>Soft, breathable cotton blend fabric</li>
+                        <li>Adjustable spaghetti strap design</li>
+                        <li>Romantic floral print pattern</li>
+                        <li>Maxi length for elegant coverage</li>
+                        <li>Perfect for beach, dinner, or sunset walks</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Product 2: Pink Corset Top -->
+            <div class="product-card">
+                <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=800'); background-size: cover; background-position: center;">
+                    <div class="product-badge">Trending</div>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Festival • Date Night</div>
+                    <h3 class="product-title">Floral Bustier Corset Top</h3>
+                    <p class="product-description">
+                        Feminine pink corset-style top with romantic floral embellishments. The fitted bodice features delicate straps and creates a flattering silhouette, perfect for pairing with high-waisted skirts or jeans.
+                    </p>
+                    <ul class="product-features">
+                        <li>Structured corset design</li>
+                        <li>Soft pink floral appliqués</li>
+                        <li>Adjustable spaghetti straps</li>
+                        <li>Back zip or lace closure</li>
+                        <li>Versatile styling options</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Product 3: White Lace Maxi Skirt -->
+            <div class="product-card">
+                <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=800'); background-size: cover; background-position: center;">
+                    <div class="product-badge">Statement</div>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Boho • Festival</div>
+                    <h3 class="product-title">Tiered Lace Maxi Skirt</h3>
+                    <p class="product-description">
+                        Dreamy white lace maxi skirt with multiple romantic tiers. Semi-sheer overlay creates movement and dimension, while the layered construction adds volume and bohemian charm.
+                    </p>
+                    <ul class="product-features">
+                        <li>Multi-tiered lace construction</li>
+                        <li>Semi-sheer overlay with lining</li>
+                        <li>Elastic or drawstring waistband</li>
+                        <li>Flowing, full-length design</li>
+                        <li>Pairs beautifully with corset tops</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Product 4: Embroidered Cowboy Boots -->
+            <div class="product-card">
+                <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1608256246200-53e635b5b65f?w=800'); background-size: cover; background-position: center;">
+                    <div class="product-badge">Essential</div>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Western • Festival</div>
+                    <h3 class="product-title">Embroidered Western Boots</h3>
+                    <p class="product-description">
+                        Classic cream-colored cowboy boots featuring intricate pink and floral embroidery. These statement boots add a touch of country-chic to any outfit, from festival looks to everyday wear.
+                    </p>
+                    <ul class="product-features">
+                        <li>Genuine or vegan leather construction</li>
+                        <li>Hand-embroidered floral details</li>
+                        <li>Classic pointed toe and stacked heel</li>
+                        <li>Pull-on style with boot straps</li>
+                        <li>Comfortable cushioned insole</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Product 5: Pearl Necklace -->
+            <div class="product-card">
+                <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800'); background-size: cover; background-position: center;">
+                    <div class="product-badge">Classic</div>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Jewelry • Accessories</div>
+                    <h3 class="product-title">Delicate Pearl Choker</h3>
+                    <p class="product-description">
+                        Timeless pearl choker necklace that adds elegant sophistication to any outfit. The classic design complements both casual beach looks and dressed-up evening ensembles.
+                    </p>
+                    <ul class="product-features">
+                        <li>Freshwater or faux pearl beads</li>
+                        <li>Adjustable length choker style</li>
+                        <li>Gold or silver-tone clasp</li>
+                        <li>Hypoallergenic materials</li>
+                        <li>Perfect layering piece</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Product 6: Straw Wristlet/Accessories -->
+            <div class="product-card">
+                <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=800'); background-size: cover; background-position: center;">
+                    <div class="product-badge">Complete</div>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Accessories • Festival</div>
+                    <h3 class="product-title">Summer Accessories Bundle</h3>
+                    <p class="product-description">
+                        Complete your look with coordinating accessories including a beaded wristlet, delicate rings, and hair accessories perfect for beach days and festival nights.
+                    </p>
+                    <ul class="product-features">
+                        <li>Beaded or woven wristlet purse</li>
+                        <li>Stackable rings and bracelets</li>
+                        <li>Hair ties and decorative pins</li>
+                        <li>Mixed metals and natural materials</li>
+                        <li>Mix-and-match versatility</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="style-notes" style="background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);">
+            <h2>🛍️ Shop Similar Styles</h2>
+            <div class="style-tips">
+                <div class="tip-card">
+                    <h3>🌺 Floral Maxi Dresses</h3>
+                    <p>
+                        <strong>Budget-Friendly ($30-$60):</strong> Shein, Amazon, ASOS, Zara<br>
+                        <strong>Mid-Range ($60-$150):</strong> Princess Polly, Urban Outfitters, Revolve, Showpo<br>
+                        <strong>Premium ($150+):</strong> Free People, Anthropologie, Reformation, LoveShackFancy<br>
+                        <strong>Search Terms:</strong> "floral maxi dress spaghetti strap," "romantic summer dress," "cottagecore floral dress"
+                    </p>
+                </div>
+
+                <div class="tip-card">
+                    <h3>💗 Corset Tops & Bustiers</h3>
+                    <p>
+                        <strong>Budget-Friendly ($20-$50):</strong> Shein, Fashion Nova, PrettyLittleThing, Boohoo<br>
+                        <strong>Mid-Range ($50-$120):</strong> Altar'd State, Princess Polly, Urban Outfitters, Nasty Gal<br>
+                        <strong>Premium ($120+):</strong> For Love & Lemons, Zimmermann, Self-Portrait<br>
+                        <strong>Search Terms:</strong> "pink floral corset top," "bustier crop top," "romantic corset"
+                    </p>
+                </div>
+
+                <div class="tip-card">
+                    <h3>🤍 Lace Maxi Skirts</h3>
+                    <p>
+                        <strong>Budget-Friendly ($25-$55):</strong> Shein, Amazon, Target (Wild Fable), H&M<br>
+                        <strong>Mid-Range ($55-$130):</strong> Free People, Urban Outfitters, ASOS, Zara<br>
+                        <strong>Premium ($130+):</strong> Anthropologie, Maje, The Kooples, Spell & The Gypsy<br>
+                        <strong>Search Terms:</strong> "white lace maxi skirt," "tiered boho skirt," "romantic festival skirt"
+                    </p>
+                </div>
+
+                <div class="tip-card">
+                    <h3>👢 Embroidered Cowboy Boots</h3>
+                    <p>
+                        <strong>Budget-Friendly ($60-$150):</strong> Amazon, DSW, Boot Barn (Laredo, Durango brands)<br>
+                        <strong>Mid-Range ($150-$350):</strong> Ariat, Corral Boots, Old Gringo, Shyanne<br>
+                        <strong>Premium ($350+):</strong> Lucchese, Tecovas, Tony Lama, Custom Etsy makers<br>
+                        <strong>Search Terms:</strong> "cream embroidered cowboy boots," "floral western boots," "pink embroidery boots"
+                    </p>
+                </div>
+
+                <div class="tip-card">
+                    <h3>💎 Pearl Necklaces & Jewelry</h3>
+                    <p>
+                        <strong>Budget-Friendly ($10-$40):</strong> Amazon, Target, Claire's, Etsy (search "pearl choker")<br>
+                        <strong>Mid-Range ($40-$150):</strong> Mejuri, Gorjana, Kendra Scott, Etsy artisans<br>
+                        <strong>Premium ($150+):</strong> Mikimoto, Tiffany & Co., local jewelers with freshwater pearls<br>
+                        <strong>Search Terms:</strong> "pearl choker necklace," "delicate pearl necklace," "dainty pearl jewelry"
+                    </p>
+                </div>
+
+                <div class="tip-card">
+                    <h3>👜 Festival Accessories</h3>
+                    <p>
+                        <strong>Budget-Friendly ($15-$50):</strong> Amazon, Target, Forever 21, H&M<br>
+                        <strong>Mid-Range ($50-$120):</strong> Urban Outfitters, Free People, Anthropologie, Etsy<br>
+                        <strong>Premium ($120+):</strong> Chan Luu, Rebecca Minkoff, local artisan markets<br>
+                        <strong>Search Terms:</strong> "beaded wristlet," "festival accessories," "boho jewelry set," "summer hair accessories"
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="style-notes" style="background: linear-gradient(135deg, #fff9e6 0%, #ffe5b4 100%);">
+            <h2>📱 Quick Shopping Guide by Retailer</h2>
+            <div class="style-tips">
+                <div class="tip-card">
+                    <h3>🌟 Budget-Conscious (Under $200 total outfit)</h3>
+                    <p>
+                        <strong>Amazon:</strong> Great for cowboy boots ($60-$100), pearl necklaces ($12-$30), and accessories<br>
+                        <strong>Shein:</strong> Floral dresses ($25-$45), corset tops ($18-$35), lace skirts ($22-$40)<br>
+                        <strong>Target:</strong> Jewelry, basic accessories, sometimes seasonal boho pieces<br>
+                        <strong>Total Outfit:</strong> ~$150-$200 with shipping
+                    </p>
+                </div>
+
+                <div class="tip-card">
+                    <h3>✨ Mid-Range Quality ($300-$500 total outfit)</h3>
+                    <p>
+                        <strong>Free People:</strong> Beautiful dresses ($128-$198), quality lace skirts, bohemian vibes<br>
+                        <strong>Princess Polly:</strong> Trendy corset tops ($50-$90), feminine styles, fast shipping<br>
+                        <strong>Ariat or Corral:</strong> Quality cowboy boots that last ($180-$280)<br>
+                        <strong>Total Outfit:</strong> ~$400-$550 with accessories
+                    </p>
+                </div>
+
+                <div class="tip-card">
+                    <h3>💫 Investment Pieces ($600+ total outfit)</h3>
+                    <p>
+                        <strong>Reformation:</strong> Sustainable, high-quality dresses ($178-$298)<br>
+                        <strong>For Love & Lemons:</strong> Designer-level corsets and romantic pieces ($150-$300)<br>
+                        <strong>Lucchese or Tecovas:</strong> Heirloom-quality boots ($350-$600)<br>
+                        <strong>Total Outfit:</strong> ~$700-$1,200 for pieces that last years
+                    </p>
+                </div>
+
+                <div class="tip-card">
+                    <h3>🎯 Pro Shopping Tips</h3>
+                    <p>
+                        • Sign up for email lists to get 10-20% off first orders<br>
+                        • Check Poshmark, Depop, and ThredUp for secondhand designer pieces<br>
+                        • Shop end-of-season sales (August for summer, February for festival gear)<br>
+                        • Use browser extensions like Honey or Rakuten for cash back<br>
+                        • Check return policies before buying boots (fit is crucial!)
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="style-notes">
+            <h2>🌸 Style Guide & Inspiration 🌸</h2>
+            <div class="style-tips">
+                <div class="tip-card">
+                    <h3>🌊 Beach to Boardwalk</h3>
+                    <p>
+                        The floral maxi dress transitions effortlessly from sandy toes to sunset dinners. Style with flat sandals for day, then elevate with wedges or cowboy boots for evening. Add a denim jacket for cooler beach nights.
+                    </p>
+                </div>
+
+                <div class="tip-card">
+                    <h3>🎪 Festival Ready</h3>
+                    <p>
+                        Pair the pink corset top with the tiered lace skirt and embroidered boots for the ultimate festival look. Layer delicate jewelry, add a crossbody bag, and you're ready to dance from noon to midnight.
+                    </p>
+                </div>
+
+                <div class="tip-card">
+                    <h3>💕 Mix & Match Magic</h3>
+                    <p>
+                        These pieces work beautifully together or separately. Try the corset with high-waisted denim shorts, or the lace skirt with a simple tank. The boots elevate everything from sundresses to jeans.
+                    </p>
+                </div>
+
+                <div class="tip-card">
+                    <h3>✨ Finishing Touches</h3>
+                    <p>
+                        Keep jewelry delicate and feminine—pearl necklaces, thin gold chains, and small hoop earrings complement without competing. Let the clothing be the statement, with accessories adding subtle shimmer.
+                    </p>
+                </div>
+            </div>
+
+            <div class="color-palette">
+                <div class="color-swatch" style="background: linear-gradient(135deg, #fff5f5, #ffe4e1);">Soft White</div>
+                <div class="color-swatch" style="background: linear-gradient(135deg, #ffb6c1, #ff69b4);">Blush Pink</div>
+                <div class="color-swatch" style="background: linear-gradient(135deg, #fff8dc, #f5deb3);">Cream</div>
+                <div class="color-swatch" style="background: linear-gradient(135deg, #ffd700, #daa520);">Gold</div>
+                <div class="color-swatch" style="background: linear-gradient(135deg, #87ceeb, #4682b4);">Sky Blue</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

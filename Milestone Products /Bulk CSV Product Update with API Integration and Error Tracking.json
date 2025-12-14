@@ -1,0 +1,513 @@
+{
+  "name": "Bulk CSV Product Update with API Integration and Error Tracking",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "5564eb0f-9eb7-4577-a1f0-a60c25b33d86",
+      "name": "Start Workflow",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1872,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "apiEndpoint",
+              "value": "<__PLACEHOLDER_VALUE__API endpoint URL for product updates__>",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "batchSize",
+              "value": 10,
+              "type": "number"
+            },
+            {
+              "id": "id-3",
+              "name": "maxRetries",
+              "value": 3,
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "4358533d-74b7-428d-a8e4-b06c00231c05",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1568,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "includeEmptyCells": true
+        }
+      },
+      "id": "63a39831-c22a-4ab2-9b94-1714e5147372",
+      "name": "Parse CSV File",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -1344,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const normalizedProducts = [];\n\nfor (const item of $input.all()) {\n  const product = item.json;\n  \n  // Normalize each product\n  const normalized = {\n    // Trim whitespace from all string fields\n    ...Object.fromEntries(\n      Object.entries(product).map(([key, value]) => [\n        key,\n        typeof value === 'string' ? value.trim() : value\n      ])\n    )\n  };\n  \n  // Ensure critical fields exist (add more as needed)\n  normalized.id = normalized.id || '';\n  normalized.name = normalized.name || '';\n  normalized.price = normalized.price || 0;\n  normalized.sku = normalized.sku || '';\n  \n  normalizedProducts.push({ json: normalized });\n}\n\nreturn normalizedProducts;"
+      },
+      "id": "89664ccc-eb79-4c2a-9672-4ff0504d104d",
+      "name": "Normalize Product Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1120,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": "={{ $('Workflow Configuration').first().json.batchSize }}",
+        "options": {}
+      },
+      "id": "c9bf06f8-56fc-4370-8dc8-e3b9abc0abb3",
+      "name": "Loop Over Products",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -896,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// ========================================\n// PASTE YOUR CUSTOM UPDATE RULES HERE\n// ========================================\n// This function receives normalized product data\n// and should return the updated product object\n\nconst product = $input.first().json;\n\n// Example: Apply your custom transformation logic\n// const updatedProduct = {\n//   ...product,\n//   // Add your custom rules here\n//   // Example: price: product.price * 1.1,\n//   // Example: category: mapCategory(product.category),\n// };\n\n// For now, return the product as-is\nconst updatedProduct = product;\n\nreturn { json: updatedProduct };"
+      },
+      "id": "04b46963-00f3-41c7-a6d3-1ee796e8633e",
+      "name": "Apply Update Rules",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -672,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Workflow Configuration').first().json.apiEndpoint }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "abb63b4a-8bf0-4ffd-8d7c-16430737fb96",
+      "name": "Update Product via API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -448,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $json.statusCode }}",
+              "rightValue": 200,
+              "rightValue2": 299,
+              "operator": {
+                "type": "number",
+                "operation": "between"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "efc8c8df-992b-4509-8992-23c2fa42ef16",
+      "name": "Check API Response",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -224,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "productId",
+              "value": "={{ $('Apply Update Rules').first().json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "status",
+              "value": "success",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "apiResponse",
+              "value": "={{ $json }}",
+              "type": "object"
+            },
+            {
+              "id": "id-4",
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9c4dbf0b-6ae4-4fb1-bc4d-a894ca1085d4",
+      "name": "Log Success",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "productId",
+              "value": "={{ $('Apply Update Rules').first().json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "status",
+              "value": "failure",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "apiResponse",
+              "value": "={{ JSON.stringify($json) }}",
+              "type": "object"
+            },
+            {
+              "id": "id-4",
+              "name": "errorMessage",
+              "value": "={{ $json.message || $json.error || 'Unknown error' }}",
+              "type": "string"
+            },
+            {
+              "id": "id-5",
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5a94096a-92e6-47c8-bbff-a737205399c4",
+      "name": "Log Failure",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        192
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "f68a3dc1-d8cc-4d1f-b8d0-ab5d78de280b",
+      "name": "Merge Logs",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        224,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "<__PLACEHOLDER_VALUE__Google Sheet ID for logging__>"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "<__PLACEHOLDER_VALUE__Sheet name (e.g., Product Update Log)__>"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "productId"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "35dba98c-88f9-453a-bb82-160f70873da4",
+      "name": "Write to Log Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        272
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4u05ucjxmEV46ZAE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// This node runs after all batches are complete\n// It doesn't receive individual items, so we'll create a summary\n// based on the workflow execution context\n\nconst summary = {\n  totalProcessed: $('Loop Over Products').itemMatching(0).json.totalItems || 0,\n  completedAt: new Date().toISOString(),\n  message: 'Product update workflow completed successfully'\n};\n\nreturn { json: summary };"
+      },
+      "id": "45c217a4-ae53-43b9-8426-4bffb69d15a6",
+      "name": "Calculate Summary Stats",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -672,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "<__PLACEHOLDER_VALUE__Your email address for notifications__>",
+        "subject": "=Product Update Workflow Complete - {{ $json.totalProcessed }} Products Processed",
+        "emailType": "text",
+        "message": "=The bulk product update workflow has completed.\n\nTotal Products Processed: {{ $json.totalProcessed }}\nCompleted At: {{ $json.completedAt }}\n\nPlease check the Google Sheet log for detailed results of each product update.\n\nWorkflow: {{ $workflow.name }}\nExecution ID: {{ $execution.id }}",
+        "options": {}
+      },
+      "id": "215dd852-1116-4437-8c7f-27352a272419",
+      "name": "Send Completion Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -448,
+        288
+      ],
+      "webhookId": "c89ff92f-b6c0-4ab3-9210-3dd9446e91d2",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "tqWAJ2w8Z0vgpxZa",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Start Workflow": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Parse CSV File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse CSV File": {
+      "main": [
+        [
+          {
+            "node": "Normalize Product Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Product Data": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Products",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Products": {
+      "main": [
+        [
+          {
+            "node": "Calculate Summary Stats",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Apply Update Rules",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply Update Rules": {
+      "main": [
+        [
+          {
+            "node": "Update Product via API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Product via API": {
+      "main": [
+        [
+          {
+            "node": "Check API Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check API Response": {
+      "main": [
+        [
+          {
+            "node": "Log Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Success": {
+      "main": [
+        [
+          {
+            "node": "Merge Logs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Failure": {
+      "main": [
+        [
+          {
+            "node": "Merge Logs",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Logs": {
+      "main": [
+        [
+          {
+            "node": "Write to Log Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write to Log Sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Products",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Summary Stats": {
+      "main": [
+        [
+          {
+            "node": "Send Completion Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "46316639-72f3-4ea7-9882-3ea476a82b3f",
+  "meta": {
+    "instanceId": "a0417da068bb60050f2af2bb32be41d02b453a9281bfda7e35db7ccb0f2c9daf"
+  },
+  "id": "6T1jMMu7vpzstgVV",
+  "tags": []
+}

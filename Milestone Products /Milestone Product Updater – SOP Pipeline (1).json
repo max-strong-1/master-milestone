@@ -1,0 +1,804 @@
+{
+  "name": "Milestone Product Updater – SOP Pipeline",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "bd52ae95-1339-4390-a8f3-29a22553cf94",
+      "name": "Start Workflow",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -8240,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "https://postman-echo.com/post",
+              "value": "<__PLACEHOLDER_VALUE__API endpoint URL for product updates__>",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "batchSize",
+              "value": 10,
+              "type": "number"
+            },
+            {
+              "id": "id-3",
+              "name": "maxRetries",
+              "value": 3,
+              "type": "number"
+            },
+            {
+              "id": "32ce605e-f3bc-4e1e-8bbc-573f4f9ce124",
+              "name": "dryRun",
+              "value": true,
+              "type": "boolean"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "1ef98433-1d5c-4ede-b8c3-2f1f9fd6f921",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -7568,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "4a4d3a3e-12e3-4c3a-97bd-5a75cb9f37ca",
+      "name": "Parse CSV File",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -7344,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Normalize Product Data\n// TODO: Implement normalization logic\n// - Trim whitespace from all fields\n// - Ensure required fields exist: id, sku, price, product_title\n// - Return normalized items\n\nreturn $input.all();"
+      },
+      "id": "953f2a93-0923-41d1-bf1a-a72f13016ce7",
+      "name": "Normalize Product Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -7104,
+        624
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": "={{ $('Workflow Configuration').first().json.batchSize }}",
+        "options": {}
+      },
+      "id": "a89b3f40-fb6a-4804-96fb-50470c28d66c",
+      "name": "Loop Over Products",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -6896,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Validate Product Row\n// TODO: Implement validation logic\n// - Check that product has a valid title\n// - Check that Images column exists and has at least 4 comma-separated URLs\n// - If validation fails, throw an error for that item\n\nreturn $input.all();"
+      },
+      "id": "a237d9a7-70d9-4e24-891f-d259b981fb28",
+      "name": "Validate Product Row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6672,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract City & State\n// TODO: Implement extraction logic\n// - Extract city and state from product title using pattern: ... in City, State\n// - If can't parse city/state reliably, throw an error and stop for that item\n\nreturn $input.all();"
+      },
+      "id": "3997bd89-c975-4acb-8995-2b2a13e7ab5f",
+      "name": "Extract City & State",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6448,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Determine Driveway Gravel\n// TODO: Implement driveway gravel detection\n// - Set boolean field isDrivewayGravel based on product title\n// - Check for phrases like \"Driveway Gravel\", \"#57 Gravel\", or other driveway keywords\n// - Keywords will be injected from config later\n\nreturn $input.all();"
+      },
+      "id": "8b1f8f3b-d9cb-43c5-b350-251fe1190243",
+      "name": "Determine Driveway Gravel",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6224,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Apply Base Description\n// TODO: Implement base description preparation\n// - Prepare base product description using existing description from CSV (Alliance Master data)\n// - DO NOT rewrite or optimize the description\n// - Preserve exact HTML from source\n// - This enforces \"no rewriting\" policy\n\nreturn $input.all();"
+      },
+      "id": "84c6d5ed-a640-4614-9126-de0b396ef1bc",
+      "name": "Apply Base Description",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6000,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Insert Location Heading\n// TODO: Implement location heading generation\n// - Use city and state from previous nodes\n// - If isDrivewayGravel is true:\n//   Build: <h2><span style=\"font-size: 18pt;\">Driveway Gravel Delivery in {City}, {State}</span></h2>\n// - Otherwise:\n//   Build: <h2><span style=\"font-size: 18pt;\">Gravel Delivery in {City}, {State}</span></h2>\n// - Store this heading on the item for later composition\n\nreturn $input.all();"
+      },
+      "id": "3bf340bd-8f48-4fa3-901c-4e2072600bea",
+      "name": "Insert Location Heading",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5776,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Insert Driveway Intro (If Needed)\n// TODO: Implement driveway intro insertion\n// - If isDrivewayGravel is true, prepend the locked driveway intro HTML block from SOP\n// - If not driveway gravel, leave description unchanged\n// - DO NOT modify spacing, indentation, or &nbsp; in the block\n// - Preserve exact HTML formatting from SOP\n\nreturn $input.all();"
+      },
+      "id": "fc04f930-d411-4253-9ae2-6a5bcd6cc268",
+      "name": "Insert Driveway Intro (If Needed)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5552,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate Comparison Table\n// TODO: Implement comparison table generation\n// - Build the locked 3-column comparison table using exact HTML template from SOP\n// - NEVER repeat the current product\n// - NEVER include Driveway Gravel when main product is Driveway Gravel\n// - Use product links, images, and titles from CSV\n// - Preserve exact HTML structure and formatting from SOP\n\nreturn $input.all();"
+      },
+      "id": "972e64af-4361-4dd9-877c-72ec2ce120b9",
+      "name": "Generate Comparison Table",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5328,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Insert Refund Policy Block\n// TODO: Implement refund policy insertion\n// - Append the exact locked refund policy HTML block from SOP\n// - NO spacing, HTML, or &nbsp; changes\n// - Preserve exact formatting from SOP\n\nreturn $input.all();"
+      },
+      "id": "77cf6c1f-6b70-4678-8b77-c43d92b466e3",
+      "name": "Insert Refund Policy Block",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5104,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Assemble Final Description\n// TODO: Implement final description assembly\n// - Combine in order:\n//   1. Location heading\n//   2. Description (from Alliance Master CSV, optionally with driveway intro applied)\n//   3. Comparison table\n//   4. Refund policy block\n// - Output the final HTML into a 'description' field for the product\n\nreturn $input.all();"
+      },
+      "id": "70d4fa60-24a8-4a30-9348-e0fa539afbd9",
+      "name": "Assemble Final Description",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4880,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Apply Branding\n// Set the following meta fields on the item:\n// - wppfm_product_brand = \"Milestone\"\n// - brand = \"Milestone\"\n// - _wc_gla_brand = \"Milestone\"\n// DO NOT change any other fields\n\nconst items = $input.all();\nfor (const item of items) {\n  item.json.wppfm_product_brand = 'Milestone';\n  item.json.brand = 'Milestone';\n  item.json._wc_gla_brand = 'Milestone';\n}\nreturn items;"
+      },
+      "id": "e6876ce9-d22c-4839-b47b-d453826084c4",
+      "name": "Apply Branding",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4656,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Workflow Configuration').first().json.apiEndpoint }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"id\": $json.id, \"sku\": $json.sku, \"description\": $json.description, \"price\": $json.price, \"brand\": $json.brand }",
+        "options": {}
+      },
+      "id": "30a45477-bc54-4086-ace7-d4e36637339e",
+      "name": "Update Product via API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -4432,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $json.statusCode >= 200 && $json.statusCode < 300 }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "af10431c-50c1-4f6e-9623-8a5a2e189880",
+      "name": "Check API Response",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -4208,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "productId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "status",
+              "value": "success",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "apiResponse",
+              "value": "={{ JSON.stringify($json) }}",
+              "type": "object"
+            },
+            {
+              "id": "id-4",
+              "name": "timestamp",
+              "value": "={{ $now }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "acda4c54-4f1c-4a9e-a76d-a32a95e3809d",
+      "name": "Log Success",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3984,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "productId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "status",
+              "value": "failure",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "errorMessage",
+              "value": "={{ $json.error || $json.message || 'Unknown error' }}",
+              "type": "string"
+            },
+            {
+              "id": "id-4",
+              "name": "timestamp",
+              "value": "={{ $now }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d951c0b2-61f6-4149-9292-64c3d9ace472",
+      "name": "Log Failure",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3984,
+        512
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "d1fb86dc-bd3d-43be-8694-711855130e9c",
+      "name": "Merge Logs",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -3760,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "<__PLACEHOLDER_VALUE__Google Sheets document ID__>"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "<__PLACEHOLDER_VALUE__Sheet name for logging__>"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [
+            "productId"
+          ],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "30593c2b-089a-480e-8331-3f59bcb83a14",
+      "name": "Write to Log Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -3536,
+        584
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4u05ucjxmEV46ZAE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Calculate Summary Stats\n// After all batches are finished, output a summary JSON with:\n// - totalProcessed (number of products)\n// - completedAt (timestamp)\n// - message (simple success text)\n\nconst items = $input.all();\nconst totalProcessed = items.length;\nconst completedAt = new Date().toISOString();\nconst message = `Workflow completed successfully. Processed ${totalProcessed} products.`;\n\nreturn [{\n  json: {\n    totalProcessed,\n    completedAt,\n    message,\n    workflowName: $workflow.name,\n    executionId: $execution.id\n  }\n}];"
+      },
+      "id": "d7a0fc7d-6ecc-4685-bba2-69f626f09017",
+      "name": "Calculate Summary Stats",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6672,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "kel@4manai.com",
+        "subject": "Workflow Complete: Milestone Product Updater",
+        "message": "=Workflow: {{ $json.workflowName }}\nExecution ID: {{ $json.executionId }}\n\nTotal Products Processed: {{ $json.totalProcessed }}\nCompleted At: {{ $json.completedAt }}\n\n{{ $json.message }}",
+        "options": {}
+      },
+      "id": "bb343cd8-1376-4b23-af6e-57fc8c9550bf",
+      "name": "Send Completion Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -6448,
+        608
+      ],
+      "webhookId": "f08e960d-de14-4dd5-b256-973bbe94b014",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "gKdN8RGNJ3qMIe1G",
+          "name": "Gmail account 9"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1OEW0rUPgtkXpA1ikVJz15qXtLnePDDvI",
+          "mode": "list",
+          "cachedResultName": "AkronCSV",
+          "cachedResultUrl": "https://drive.google.com/file/d/1OEW0rUPgtkXpA1ikVJz15qXtLnePDDvI/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -7792,
+        608
+      ],
+      "id": "5f4b4913-b03b-44c1-abbe-a59cdc75a796",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "2bznV6urfPp9Suxv",
+          "name": "Google Drive account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "AkronCSV",
+        "returnAll": true,
+        "filter": {
+          "driveId": {
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "1Blw6W0JNlOCyZcDsvKRm1HwPwKBiJQkf",
+            "mode": "list",
+            "cachedResultName": "Milestone",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1Blw6W0JNlOCyZcDsvKRm1HwPwKBiJQkf"
+          },
+          "whatToSearch": "all"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -8016,
+        608
+      ],
+      "id": "1c72ac85-663f-43ee-b3eb-d0276ac0f1d4",
+      "name": "Search files and folders",
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "2bznV6urfPp9Suxv",
+          "name": "Google Drive account 3"
+        }
+      },
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Start Workflow": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Parse CSV File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse CSV File": {
+      "main": [
+        [
+          {
+            "node": "Normalize Product Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Product Data": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Products",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Products": {
+      "main": [
+        [
+          {
+            "node": "Calculate Summary Stats",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validate Product Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Product Row": {
+      "main": [
+        [
+          {
+            "node": "Extract City & State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract City & State": {
+      "main": [
+        [
+          {
+            "node": "Determine Driveway Gravel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Determine Driveway Gravel": {
+      "main": [
+        [
+          {
+            "node": "Apply Base Description",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply Base Description": {
+      "main": [
+        [
+          {
+            "node": "Insert Location Heading",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Location Heading": {
+      "main": [
+        [
+          {
+            "node": "Insert Driveway Intro (If Needed)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Driveway Intro (If Needed)": {
+      "main": [
+        [
+          {
+            "node": "Generate Comparison Table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Comparison Table": {
+      "main": [
+        [
+          {
+            "node": "Insert Refund Policy Block",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Refund Policy Block": {
+      "main": [
+        [
+          {
+            "node": "Assemble Final Description",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assemble Final Description": {
+      "main": [
+        [
+          {
+            "node": "Apply Branding",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply Branding": {
+      "main": [
+        [
+          {
+            "node": "Update Product via API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Product via API": {
+      "main": [
+        [
+          {
+            "node": "Check API Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check API Response": {
+      "main": [
+        [
+          {
+            "node": "Log Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Success": {
+      "main": [
+        [
+          {
+            "node": "Merge Logs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Failure": {
+      "main": [
+        [
+          {
+            "node": "Merge Logs",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Logs": {
+      "main": [
+        [
+          {
+            "node": "Write to Log Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write to Log Sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Products",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Summary Stats": {
+      "main": [
+        [
+          {
+            "node": "Send Completion Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "09b9af3a-0b4f-45c6-b0f5-833e07fc0bd0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a0417da068bb60050f2af2bb32be41d02b453a9281bfda7e35db7ccb0f2c9daf"
+  },
+  "id": "JkelFSI2xh9zoWJj",
+  "tags": []
+}
